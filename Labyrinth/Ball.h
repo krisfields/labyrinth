@@ -7,7 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+@class CMAttitude;
 
 @interface Ball : NSObject
-+ (Ball *) createBallWithPos:(CGPoint)pos andView:(UIView *)superView andDiameter:(int)diameter;
+@property (strong) CALayer *myLayer;
+
++ (Ball *) createBallWithPos:(CGPoint)pos andView:(UIView *)superView andDiameter:(int)diameter andImage:(UIImage *)ballImage;
+- (void) moveBall:(CMAttitude *)attitude;
 @end

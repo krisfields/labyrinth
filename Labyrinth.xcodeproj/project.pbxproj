@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C59A93B915F56B39005CD3BE /* ball.png in Resources */ = {isa = PBXBuildFile; fileRef = C59A93B815F56B39005CD3BE /* ball.png */; };
 		C59EDDA815F52BBB00D53F32 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C59EDDA715F52BBB00D53F32 /* UIKit.framework */; };
 		C59EDDAA15F52BBB00D53F32 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C59EDDA915F52BBB00D53F32 /* Foundation.framework */; };
 		C59EDDAC15F52BBB00D53F32 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C59EDDAB15F52BBB00D53F32 /* CoreGraphics.framework */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C59A93B815F56B39005CD3BE /* ball.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ball.png; sourceTree = "<group>"; };
 		C59EDDA315F52BBB00D53F32 /* Labyrinth.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Labyrinth.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C59EDDA715F52BBB00D53F32 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		C59EDDA915F52BBB00D53F32 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -91,6 +93,7 @@
 				C59EDDB615F52BBB00D53F32 /* LabyrinthAppDelegate.h */,
 				C59EDDB715F52BBB00D53F32 /* LabyrinthAppDelegate.m */,
 				C59EDDB915F52BBB00D53F32 /* LabyrinthViewController.h */,
+				C59A93B815F56B39005CD3BE /* ball.png */,
 				C59EDDBA15F52BBB00D53F32 /* LabyrinthViewController.m */,
 				C59EDDBC15F52BBB00D53F32 /* LabyrinthViewController.xib */,
 				C59EDDC815F5322F00D53F32 /* Ball.h */,
@@ -165,6 +168,7 @@
 			files = (
 				C59EDDB215F52BBB00D53F32 /* InfoPlist.strings in Resources */,
 				C59EDDBE15F52BBB00D53F32 /* LabyrinthViewController.xib in Resources */,
+				C59A93B915F56B39005CD3BE /* ball.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -210,6 +214,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
@@ -236,6 +241,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
@@ -292,6 +298,7 @@
 				C59EDDC315F52BBB00D53F32 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

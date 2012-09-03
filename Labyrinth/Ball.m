@@ -8,15 +8,16 @@
 
 #import "Ball.h"
 #import <QuartzCore/QuartzCore.h>
+#import <CoreMotion/CoreMotion.h>
 
 @interface Ball()
-@property (strong) CALayer *myLayer;
+
 @property int diameter;
 @end
 
 @implementation Ball
 
-+ (Ball *) createBallWithPos:(CGPoint)pos andView:(UIView *)superView andDiameter:(int)diameter
++ (Ball *) createBallWithPos:(CGPoint)pos andView:(UIView *)superView andDiameter:(int)diameter andImage:(UIImage *)ballImage
 {
     Ball *ballInstance = [Ball new];
     ballInstance.diameter = diameter;
@@ -26,6 +27,11 @@
     ballInstance.myLayer.delegate = ballInstance;
     [ballInstance.myLayer setNeedsDisplay];
     [superView.layer addSublayer:ballInstance.myLayer];
+    if (ballImage) {
+        __weak UIImage *layerImage = ballImage;
+        CGImageRef image = [layerImage CGImage];
+        [ballInstance.myLayer setContents:(__bridge id)image];
+    }
     return ballInstance;
 }
 
@@ -35,4 +41,32 @@
     CGContextFillEllipseInRect(ctx, self.myLayer.bounds);
 }
 
+- (void) moveBall:(CMAttitude *)attitude {
+    double xPos = self.myLayer.position.x;
+    double yPos = self.myLayer.position.y;
+//    if (attitude.roll > 0.02 || attitude.roll < 0.0) {
+//        xPos += attitude.roll * 10;
+//    }
+//    if (attitude.pitch > 0.02 || attitude.pitch < 0.0) {
+//        yPos += attitude.pitch * 10;
+//    }
+    xPos += attitude.roll * 25;
+    yPos += attitude.pitch * 25;
+    if (xPos - self.diameter/2 < 0){
+        xPos = 0 +self.diameter/2;
+    } else if (xPos + self.diameter/2 > self.myLayer.superlayer.bounds.size.width) {
+        xPos = self.myLayer.superlayer.bounds.size.width - self.diameter/2;
+    }
+    if (yPos - self.diameter/2 < 0){
+        yPos = 0 +self.diameter/2;
+    } else if (yPos + self.diameter/2 > self.myLayer.superlayer.bounds.size.height) {
+        yPos = self.myLayer.superlayer.bounds.size.height - self.diameter/2;
+    }
+    dispatch_async(dispatch_get_main_queue(), ^(void){
+           self.myLayer.position = CGPointMake(xPos, yPos); 
+    });
+
+    
+//    self.myLayer.position = CGPointMake(xPosStart, self.myLayer.superlayer.bounds.origin.x-self.diameter);
+}
 @end
