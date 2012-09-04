@@ -57,22 +57,39 @@
     
     for (Wall *wall in walls) {
         
-        if (CGRectIntersectsRect(self.myLayer.frame, wall.myLayer.frame))
-        {
-            bool ballAboveWall = (self.myLayer.frame.origin.y - wall.myLayer.frame.origin.y < 0) ? true : false;
-            bool ballLeftOfWall = (self.myLayer.frame.origin.x - wall.myLayer.frame.origin.x < 0) ? true : false;
-            
-            if (wall.horiz)
-            {
-                if (ballAboveWall)
-                    yPos = wall.myLayer.frame.origin.y - wall.wallThickness/2 - self.diameter/2 - 0.0001;
-                    //yPos -= attitude.pitch * 25;
-                else
-                    yPos = wall.myLayer.frame.origin.y + wall.wallThickness/2 + self.diameter/2 + 0.0001;
-            } else {
-                xPos -= attitude.roll *25;
-            }
+        bool ballAboveWall = (self.myLayer.frame.origin.y + self.myLayer.bounds.size.height < wall.myLayer.frame.origin.y) ? true : false;
+        bool ballLeftOfWall = (self.myLayer.frame.origin.x + self.myLayer.bounds.size.width - wall.myLayer.frame.origin.x < 0) ? true : false;
+        bool ballRightOfWall = (self.myLayer.frame.origin.x > wall.myLayer.frame.origin.x + wall.myLayer.bounds.size.width) ? true : false;
+        bool ballBelowWall = (self.myLayer.frame.origin.y - wall.myLayer.frame.origin.y + wall.myLayer.bounds.size.height > 0);
+        NSLog(@"BallAboveWall: %d, BallBelowWall: %d, BallLeftOfWall: %d, BallRightOfWall: %d", ballAboveWall, ballBelowWall, ballLeftOfWall, ballRightOfWall);
+        NSLog(@"yPos + self.diameter/2 = %f wall.myLayer.frame.origin.y = %f", yPos + self.diameter/2, wall.myLayer.frame.origin.y);
+        NSLog(@"1 if true: %d",  yPos + self.diameter/2 >= wall.myLayer.frame.origin.y);
+        if (ballAboveWall && !ballLeftOfWall && !ballRightOfWall && yPos + self.diameter/2 >= wall.myLayer.frame.origin.y) {
+            yPos = wall.myLayer.frame.origin.y - self.diameter/2 - 1;
+        } else if (ballBelowWall && !ballLeftOfWall && !ballRightOfWall && yPos - self.diameter/2 <= wall.myLayer.frame.origin.y + wall.myLayer.bounds.size.height) {
+            yPos = wall.myLayer.frame.origin.y + wall.myLayer.bounds.size.height + self.diameter/2 +1;
+        } else if (ballLeftOfWall && !ballAboveWall && !ballBelowWall && xPos + self.diameter/2 >= wall.myLayer.frame.origin.x) {
+            xPos = wall.myLayer.frame.origin.x - self.diameter/2 - 1;
+        } else if (ballRightOfWall && !ballAboveWall && !ballBelowWall && xPos - self.diameter/2 <= wall.myLayer.frame.origin.x + wall.myLayer.bounds.size.width) {
+            xPos = wall.myLayer.frame.origin.x + wall.myLayer.bounds.size.height + self.diameter/2 + 1;
         }
+        
+//        if (CGRectIntersectsRect(self.myLayer.frame, wall.myLayer.frame))
+//        {
+//            bool ballAboveWall = (self.myLayer.frame.origin.y - wall.myLayer.frame.origin.y < 0) ? true : false;
+//            bool ballLeftOfWall = (self.myLayer.frame.origin.x - wall.myLayer.frame.origin.x < 0) ? true : false;
+//            
+//            if (wall.horiz)
+//            {
+//                if (ballAboveWall)
+//                    yPos = wall.myLayer.frame.origin.y - self.diameter/2;
+//                    //yPos -= attitude.pitch * 25;
+//                else
+//                    yPos = wall.myLayer.frame.origin.y + wall.wallThickness/2 + self.diameter/2 + 0.0001;
+//            } else {
+//                xPos -= attitude.roll *25;
+//            }
+//        }
     }
     
     if (xPos - self.diameter/2 < 0){
