@@ -45,15 +45,25 @@
     self.view.backgroundColor = [UIColor whiteColor];
     
     self.walls = [NSMutableArray new];
-    CGPoint wallStart = CGPointMake(self.view.bounds.size.width*1/4, self.view.bounds.size.height*2/3);
-    Wall * wall = [Wall createWallWithStart:wallStart andLength:self.view.bounds.size.width/2 andHoriz:YES andView:self.view];
-    [self.walls addObject:wall];
+    
+//    CGPoint wallStart = CGPointMake(self.view.bounds.size.width*1/4, self.view.bounds.size.height*2/3);
+//    Wall * wall = [Wall createWallWithStart:wallStart andLength:self.view.bounds.size.width/2 andHoriz:YES andView:self.view];
+//    [self.walls addObject:wall];
+//    
+//    wallStart = CGPointMake(self.view.bounds.size.width*1/4, self.view.bounds.size.height*2/3+10);
+//    wall = [Wall createWallWithStart:wallStart andLength:self.view.bounds.size.width/2 andHoriz:YES andView:self.view];
+//    [self.walls addObject:wall];
     
     CGPoint centerOfView  = CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2);
     CGPoint bottomRightOfView = CGPointMake(self.view.bounds.size.width-18, self.view.bounds.size.height - 18);
     self.goal = [Ball createBallWithPos:bottomRightOfView andView:self.view andDiameter:35 andImage:nil];
     UIImage *ballImage = [UIImage imageNamed:@"ball.png"];
     Ball *ball = [Ball createBallWithPos:centerOfView andView:self.view andDiameter:30 andImage:ballImage];
+    
+    NSArray *randomWalls = [Wall createRandomWallsWithNum:15 andView:self.view andBalls:self.balls];
+    [self.walls addObjectsFromArray:randomWalls];
+    
+    
 
     self.balls = [NSMutableArray new];
     [self.balls addObject:ball];

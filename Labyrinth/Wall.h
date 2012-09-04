@@ -11,6 +11,7 @@
 
 @interface Wall : NSObject
 +(Wall *) createWallWithStart:(CGPoint)startPt andLength: (CGFloat) length andHoriz: (bool) horiz andView:(UIView *)superView;
++(NSArray *) createRandomWallsWithNum: (int) num andView: (UIView *)superView andBalls: (NSArray *) balls;
 @property CALayer* myLayer;
 @property bool horiz;
 @property CGFloat wallThickness;
