@@ -11,6 +11,7 @@
 
 @interface Ball : NSObject
 @property (strong) CALayer *myLayer;
+@property int diameter;
 
 + (Ball *) createBallWithPos:(CGPoint)pos andView:(UIView *)superView andDiameter:(int)diameter andImage:(UIImage *)ballImage;
 - (void) moveBall:(CMAttitude *)attitude andWalls: (NSArray *) walls;

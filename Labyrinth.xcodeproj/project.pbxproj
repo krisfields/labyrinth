@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C50AA45215F6BBA500AA2E4E /* Segment.m in Sources */ = {isa = PBXBuildFile; fileRef = C50AA45115F6BBA500AA2E4E /* Segment.m */; };
+		C50AA45515F6C0BF00AA2E4E /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C50AA45415F6C0BF00AA2E4E /* GameKit.framework */; };
 		C59A93B915F56B39005CD3BE /* ball.png in Resources */ = {isa = PBXBuildFile; fileRef = C59A93B815F56B39005CD3BE /* ball.png */; };
 		C59A93BC15F57ADD005CD3BE /* LabyrinthView.m in Sources */ = {isa = PBXBuildFile; fileRef = C59A93BB15F57ADD005CD3BE /* LabyrinthView.m */; };
 		C59A93C215F57F7F005CD3BE /* Wall.m in Sources */ = {isa = PBXBuildFile; fileRef = C59A93C115F57F7F005CD3BE /* Wall.m */; };
@@ -24,6 +26,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		C50AA45015F6BBA500AA2E4E /* Segment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Segment.h; sourceTree = "<group>"; };
+		C50AA45115F6BBA500AA2E4E /* Segment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Segment.m; sourceTree = "<group>"; };
+		C50AA45415F6C0BF00AA2E4E /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		C59A93B815F56B39005CD3BE /* ball.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ball.png; sourceTree = "<group>"; };
 		C59A93BA15F57ADD005CD3BE /* LabyrinthView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabyrinthView.h; sourceTree = "<group>"; };
 		C59A93BB15F57ADD005CD3BE /* LabyrinthView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LabyrinthView.m; sourceTree = "<group>"; };
@@ -53,6 +58,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C50AA45515F6C0BF00AA2E4E /* GameKit.framework in Frameworks */,
 				C59EDDCE15F536E700D53F32 /* CoreMotion.framework in Frameworks */,
 				C59EDDCC15F5337600D53F32 /* QuartzCore.framework in Frameworks */,
 				C59EDDA815F52BBB00D53F32 /* UIKit.framework in Frameworks */,
@@ -67,6 +73,7 @@
 		C59EDD9815F52BBB00D53F32 = {
 			isa = PBXGroup;
 			children = (
+				C50AA45415F6C0BF00AA2E4E /* GameKit.framework */,
 				C59EDDAD15F52BBB00D53F32 /* Labyrinth */,
 				C59EDDA615F52BBB00D53F32 /* Frameworks */,
 				C59EDDA415F52BBB00D53F32 /* Products */,
@@ -108,6 +115,8 @@
 				C59A93C015F57F7F005CD3BE /* Wall.h */,
 				C59A93C115F57F7F005CD3BE /* Wall.m */,
 				C59EDDC915F5322F00D53F32 /* Ball.m */,
+				C50AA45015F6BBA500AA2E4E /* Segment.h */,
+				C50AA45115F6BBA500AA2E4E /* Segment.m */,
 				C59EDDAE15F52BBB00D53F32 /* Supporting Files */,
 			);
 			path = Labyrinth;
@@ -195,6 +204,7 @@
 				C59EDDCA15F5322F00D53F32 /* Ball.m in Sources */,
 				C59A93BC15F57ADD005CD3BE /* LabyrinthView.m in Sources */,
 				C59A93C215F57F7F005CD3BE /* Wall.m in Sources */,
+				C50AA45215F6BBA500AA2E4E /* Segment.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

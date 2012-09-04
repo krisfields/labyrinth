@@ -12,12 +12,14 @@
 #import <QuartzCore/QuartzCore.h>
 #import "LabyrinthView.h"
 #import "Wall.h"
+#import <GameKit/GameKit.h>
 
-@interface LabyrinthViewController () <UIAlertViewDelegate>
+@interface LabyrinthViewController () <UIAlertViewDelegate, GKSessionDelegate>
 @property (strong) CMMotionManager* motionManager;
 @property (strong) NSMutableArray *balls;
 @property (strong) Ball *goal;
 @property (strong) NSMutableArray *walls;
+@property (strong) GKSession* session;
 
 @end
 
@@ -30,6 +32,10 @@
         // Custom initialization
 //        LabyrinthView *lv = [LabyrinthView new] ;
 //        self.view = lv;
+        self.session = [[GKSession alloc] initWithSessionID:@"Pokemon" displayName:@"Player" sessionMode:GKSessionModePeer];
+        [self.session setDataReceiveHandler:self withContext:nil]; // Given to data whenever it's called. Not useful here.
+        self.session.delegate = self;
+        self.session.available = YES;
     }
     return self;
 }
@@ -45,28 +51,36 @@
     self.view.backgroundColor = [UIColor whiteColor];
     
     self.walls = [NSMutableArray new];
-    
+//    
 //    CGPoint wallStart = CGPointMake(self.view.bounds.size.width*1/4, self.view.bounds.size.height*2/3);
 //    Wall * wall = [Wall createWallWithStart:wallStart andLength:self.view.bounds.size.width/2 andHoriz:YES andView:self.view];
 //    [self.walls addObject:wall];
-//    
+//  
 //    wallStart = CGPointMake(self.view.bounds.size.width*1/4, self.view.bounds.size.height*2/3+10);
-//    wall = [Wall createWallWithStart:wallStart andLength:self.view.bounds.size.width/2 andHoriz:YES andView:self.view];
-//    [self.walls addObject:wall];
+//    Wall * wall2 = [Wall createWallWithStart:wallStart andLength:self.view.bounds.size.width/2 andHoriz:YES andView:self.view];
+//    [self.walls addObject:wall2];
+//    
+//    wallStart = CGPointMake(self.view.bounds.size.width*1/8, self.view.bounds.size.height*2/3+10);
+//    Wall * wall3 = [Wall createWallWithStart:wallStart andLength:self.view.bounds.size.width/2 andHoriz:NO andView:self.view];
+//    [self.walls addObject:wall3];
+//    
+//    wallStart = CGPointMake(self.view.bounds.size.width*7/8, self.view.bounds.size.height*2/3+10);
+//    Wall * wall4 = [Wall createWallWithStart:wallStart andLength:self.view.bounds.size.width/2 andHoriz:NO andView:self.view];
+//    [self.walls addObject:wall4];
     
     CGPoint centerOfView  = CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2);
     CGPoint bottomRightOfView = CGPointMake(self.view.bounds.size.width-18, self.view.bounds.size.height - 18);
     self.goal = [Ball createBallWithPos:bottomRightOfView andView:self.view andDiameter:35 andImage:nil];
     UIImage *ballImage = [UIImage imageNamed:@"ball.png"];
     Ball *ball = [Ball createBallWithPos:centerOfView andView:self.view andDiameter:30 andImage:ballImage];
+    self.balls = [NSMutableArray new];
+    [self.balls addObject:ball];
     
-    NSArray *randomWalls = [Wall createRandomWallsWithNum:15 andView:self.view andBalls:self.balls];
+//    NSArray *randomWalls = [Wall createRandomWallsWithNum:15 andView:self.view andBalls:self.balls];
+    NSArray *randomWalls = [Wall createRandomSolvableMazeWithNum:50 andView:self.view andBalls:self.balls];
     [self.walls addObjectsFromArray:randomWalls];
     
     
-
-    self.balls = [NSMutableArray new];
-    [self.balls addObject:ball];
     
     self.motionManager = [CMMotionManager new];
     [self restartMotionManager];
@@ -141,5 +155,43 @@
     
     [self.motionManager startDeviceMotionUpdatesToQueue:backgroundQueue withHandler:motionBlock];
 
+}
+
+-(void)session:(GKSession *)session peer:(NSString *)peerID didChangeState:(GKPeerConnectionState)state {
+    if (state == GKPeerStateAvailable) {
+//        [self logToView:[NSString stringWithFormat:@"Connecting to peer: %@\n", peerID]];
+        
+        // I found you. I want to connnect.
+        [session connectToPeer:peerID withTimeout:2];
+
+    } else if (state == GKPeerStateConnected) {
+        // State happens three times. Available, connected, and Disconnected.
+//        [self logToView:[NSString stringWithFormat:@"Connected to peer: %@\n", peerID]];
+        //    [self sendMessage:@"Hello peer!" toPeer:peerID];
+        
+        // only connect two players
+                [self sendMessage];
+        session.available = NO;
+    }
+}
+
+// ReveiveData, Delegate method. Mandatory for data handler.
+-(void)receiveData:(NSData *)data fromPeer:(NSString *)peer inSession: (GKSession *)session context:(void *)context {
+    NSString* message = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    [[[UIAlertView alloc] initWithTitle:peer message:message delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil] show];
+}
+
+// Send Data. Send message is custom
+-(void)sendMessage {
+    
+    NSString *message = @"Test message"
+    ;    // Convert data to bytes
+    NSData* payload = [message dataUsingEncoding:NSUTF8StringEncoding];
+    
+    // This is where the magic happens. Send the payload to everyone.
+    // You can send it to individual peers as well.
+    // Data Mode: Unreliable or reliable. Reliable: They'll always be received in order.
+    // Unreliable: If it's ok once in a while to lose a message, or come in out of order. Generally faster. Not worth it here.
+    [self.session sendDataToAllPeers:payload withDataMode:GKSendDataReliable error:nil];
 }
 @end

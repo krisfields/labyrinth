@@ -77,6 +77,80 @@
     return walls;
 }
 
++ (NSArray *) createRandomSolvableMazeWithNum:(int)num andView:(UIView *)superView andBalls:(NSArray *)balls
+{
+    NSMutableArray *walls = [NSMutableArray new];
+    int maxDiam = 0;
+    for (Ball *ball in balls)
+    {
+        if (ball.diameter > maxDiam)
+            maxDiam = ball.diameter;
+    }
+    // Should programatically ccount for wall thickness
+    int gap = maxDiam*2;
+    
+    int horizStartPt = gap;
+    int horizEndPt = superView.frame.size.width - gap;
+    int vertStartPt = gap;
+    int vertEndPt = superView.frame.size.height - gap;
+    int crntNumWalls = 0;
+    
+    
+    for (int v=vertStartPt; v < vertEndPt; v += gap)
+    {
+        if (crntNumWalls > num)
+            break;
+        for (int h=horizStartPt; h < horizEndPt; h += gap)
+        {
+            if (crntNumWalls > num)
+                break;
+            bool randHoriz = arc4random()%2;
+            //randHoriz = YES;
+            CGFloat randLength;
+            if (randHoriz)
+            {
+                randLength = (arc4random()/(double)UINT_MAX)*(superView.frame.size.width*3/4);
+                //v++;
+            }
+            else
+            {
+                randLength = (arc4random()/(double)UINT_MAX)*(superView.frame.size.height*3/4);
+            }
+            CGPoint randStartPt = CGPointMake(v, h);
+            Wall *wallInstance = [Wall createWallWithStart:randStartPt andLength:randLength andHoriz:randHoriz andView:superView];
+            bool excludeWall = NO;
+            for (Wall* wall in walls)
+            {
+                if (CGRectIntersectsRect(wall.myLayer.frame, wallInstance.myLayer.frame))
+                {
+                    excludeWall = YES;
+                    break;
+                }
+            }
+            if (!excludeWall)
+            {
+                for (Ball *ball in balls)
+                {
+                    if (CGRectIntersectsRect(wallInstance.myLayer.frame, ball.myLayer.frame) )
+                    {
+                        excludeWall = YES;
+                        break;
+                    }
+                }
+            }
+            if (!excludeWall)
+            {
+                [walls addObject:wallInstance];
+                crntNumWalls++;
+            } else {
+                [wallInstance.myLayer removeFromSuperlayer];
+            }
+        }
+    }
+    
+    return walls;
+}
+
 -(void) drawLayer:(CALayer *)layer inContext:(CGContextRef)ctx
 {
     CGContextSetFillColorWithColor(ctx, [[UIColor blackColor] CGColor]);
