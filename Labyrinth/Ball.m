@@ -9,6 +9,7 @@
 #import "Ball.h"
 #import <QuartzCore/QuartzCore.h>
 #import <CoreMotion/CoreMotion.h>
+#import "Wall.h"
 
 @interface Ball()
 
@@ -41,7 +42,7 @@
     CGContextFillEllipseInRect(ctx, self.myLayer.bounds);
 }
 
-- (void) moveBall:(CMAttitude *)attitude {
+- (void) moveBall:(CMAttitude *)attitude andWalls: (NSArray *) walls{
     double xPos = self.myLayer.position.x;
     double yPos = self.myLayer.position.y;
 //    if (attitude.roll > 0.02 || attitude.roll < 0.0) {
@@ -50,8 +51,30 @@
 //    if (attitude.pitch > 0.02 || attitude.pitch < 0.0) {
 //        yPos += attitude.pitch * 10;
 //    }
+    
     xPos += attitude.roll * 25;
     yPos += attitude.pitch * 25;
+    
+    for (Wall *wall in walls) {
+        
+        if (CGRectIntersectsRect(self.myLayer.frame, wall.myLayer.frame))
+        {
+            bool ballAboveWall = (self.myLayer.frame.origin.y - wall.myLayer.frame.origin.y < 0) ? true : false;
+            bool ballLeftOfWall = (self.myLayer.frame.origin.x - wall.myLayer.frame.origin.x < 0) ? true : false;
+            
+            if (wall.horiz)
+            {
+                if (ballAboveWall)
+                    yPos = wall.myLayer.frame.origin.y - wall.wallThickness/2 - self.diameter/2 - 0.0001;
+                    //yPos -= attitude.pitch * 25;
+                else
+                    yPos = wall.myLayer.frame.origin.y + wall.wallThickness/2 + self.diameter/2 + 0.0001;
+            } else {
+                xPos -= attitude.roll *25;
+            }
+        }
+    }
+    
     if (xPos - self.diameter/2 < 0){
         xPos = 0 +self.diameter/2;
     } else if (xPos + self.diameter/2 > self.myLayer.superlayer.bounds.size.width) {
