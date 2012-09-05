@@ -60,7 +60,7 @@
         bool ballLeftOfWall = (self.myLayer.frame.origin.x + self.myLayer.bounds.size.width < wall.myLayer.frame.origin.x) ? true : false;
         bool ballRightOfWall = (self.myLayer.frame.origin.x > wall.myLayer.frame.origin.x + wall.myLayer.bounds.size.width) ? true : false;
         bool ballBelowWall = (self.myLayer.frame.origin.y > wall.myLayer.frame.origin.y + wall.myLayer.bounds.size.height) ? true: false;
-        NSLog(@"BallAboveWall: %d, BallBelowWall: %d, BallLeftOfWall: %d, BallRightOfWall: %d", ballAboveWall, ballBelowWall, ballLeftOfWall, ballRightOfWall);
+//        NSLog(@"BallAboveWall: %d, BallBelowWall: %d, BallLeftOfWall: %d, BallRightOfWall: %d", ballAboveWall, ballBelowWall, ballLeftOfWall, ballRightOfWall);
 //        NSLog(@"yPos + self.diameter/2 = %f wall.myLayer.frame.origin.y = %f", yPos + self.diameter/2, wall.myLayer.frame.origin.y);
 //        NSLog(@"1 if true: %d",  yPos + self.diameter/2 >= wall.myLayer.frame.origin.y);
         if (ballAboveWall && !ballLeftOfWall && !ballRightOfWall && yPos + self.diameter/2 >= wall.myLayer.frame.origin.y) {

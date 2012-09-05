@@ -11,7 +11,7 @@
 #import <CoreMotion/CoreMotion.h>
 #import "Ball.h"
 
-@interface Wall()
+@interface Wall() <NSCoding>
 
 @end
 
@@ -150,7 +150,23 @@
     
     return walls;
 }
-
+- (id)initWithCoder:(NSCoder *)decoder
+{
+    self = [super self];
+    if (self) {
+        self.myLayer = [decoder decodeObjectForKey:@"myLayer"];
+        self.horiz = [decoder decodeBoolForKey:@"horiz"];
+        self.wallThickness = [decoder decodeDoubleForKey:@"wallThickness"];
+    }
+    
+    return self;
+}
+- (void)encodeWithCoder:(NSCoder *)encoder
+{
+    [encoder encodeObject:self.myLayer forKey:@"myLayer"];
+    [encoder encodeBool:self.horiz forKey:@"horiz"];
+    [encoder encodeDouble:self.wallThickness forKey:@"wallThickness"];
+}
 -(void) drawLayer:(CALayer *)layer inContext:(CGContextRef)ctx
 {
     CGContextSetFillColorWithColor(ctx, [[UIColor blackColor] CGColor]);

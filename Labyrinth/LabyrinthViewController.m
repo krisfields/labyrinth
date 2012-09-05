@@ -20,6 +20,8 @@
 @property (strong) Ball *goal;
 @property (strong) NSMutableArray *walls;
 @property (strong) GKSession* session;
+@property bool isClient;
+@property bool isGameStart;
 
 @end
 
@@ -32,6 +34,8 @@
         // Custom initialization
 //        LabyrinthView *lv = [LabyrinthView new] ;
 //        self.view = lv;
+        self.isClient = NO;
+        self.isGameStart = YES;
         self.session = [[GKSession alloc] initWithSessionID:@"Pokemon" displayName:@"Player" sessionMode:GKSessionModePeer];
         [self.session setDataReceiveHandler:self withContext:nil]; // Given to data whenever it's called. Not useful here.
         self.session.delegate = self;
@@ -108,10 +112,10 @@
         dispatch_async(dispatch_get_main_queue(), ^(void){
             if (CGRectContainsRect(self.goal.myLayer.frame, ball.myLayer.frame))
             {
-                UIAlertView* popup = [[UIAlertView alloc] initWithTitle:@"You won!" message:@"It wasn't that hard though." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                UIAlertView* popup = [[UIAlertView alloc] initWithTitle:@"You won!" message:@"Play Again?" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
                 [self.motionManager stopDeviceMotionUpdates];
                 [popup show];
-                
+                [self sendMessage:@"You lost!"];
             }
 
         });
@@ -157,34 +161,76 @@
 
 }
 
+// Mandatory delegate method
+-(void)session:(GKSession*)session didReceiveConnectionRequestFromPeer:(NSString *)peerID {
+    [self.session acceptConnectionFromPeer:peerID error:nil];
+    session.available = NO;
+    self.isClient = YES;
+    //self.isGameStart = NO;
+    NSLog(@"Did Receive Connection Request");
+    
+//    [self logToView:[NSString stringWithFormat:@"Connecting client: %@\n", peerID]];
+    //  [self sendMessage:@"Hello client!" toPeer:peerID];
+}
+
 -(void)session:(GKSession *)session peer:(NSString *)peerID didChangeState:(GKPeerConnectionState)state {
     if (state == GKPeerStateAvailable) {
 //        [self logToView:[NSString stringWithFormat:@"Connecting to peer: %@\n", peerID]];
-        
+        NSLog(@"did Change State, state == GKPeerStateAvailable");
         // I found you. I want to connnect.
         [session connectToPeer:peerID withTimeout:2];
 
     } else if (state == GKPeerStateConnected) {
+        NSLog(@"did Change State, state == GKPeerStateConnected");
+        if (!self.isClient) {
+            NSMutableData *data = [[NSMutableData alloc] init];
+            NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
+            [archiver encodeObject:self.walls forKey:@"walls"];
+            [archiver finishEncoding];
+            [self.session sendDataToAllPeers:data withDataMode:GKSendDataReliable error:nil];
+        }
         // State happens three times. Available, connected, and Disconnected.
 //        [self logToView:[NSString stringWithFormat:@"Connected to peer: %@\n", peerID]];
         //    [self sendMessage:@"Hello peer!" toPeer:peerID];
         
         // only connect two players
-                [self sendMessage];
+//                [self sendMessage];
+        
         session.available = NO;
     }
 }
 
 // ReveiveData, Delegate method. Mandatory for data handler.
 -(void)receiveData:(NSData *)data fromPeer:(NSString *)peer inSession: (GKSession *)session context:(void *)context {
-    NSString* message = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    [[[UIAlertView alloc] initWithTitle:peer message:message delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil] show];
+    NSLog(@"Receive data, isGameStart is = %d", self.isGameStart);
+    NSString* message;
+    if (self.isGameStart) {
+        if (self.isClient) {
+            NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+            for (Wall *wall in self.walls){
+                [wall.myLayer removeFromSuperlayer];
+            };
+            self.walls = nil;
+            self.walls = [unarchiver decodeObjectForKey:@"walls"];
+            for (Wall *wall in self.walls) {
+               [self.view.layer addSublayer:wall.myLayer];
+                [wall.myLayer setNeedsDisplay];
+            }
+            [self.view setNeedsDisplay];
+            [unarchiver finishDecoding];
+        }
+        self.isGameStart = NO;
+        message = @"Start!";
+    } else {
+        message = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    }
+        [[[UIAlertView alloc] initWithTitle:peer message:message delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil] show];
 }
 
 // Send Data. Send message is custom
--(void)sendMessage {
-    
-    NSString *message = @"Test message"
+-(void)sendMessage:(NSString *)message {
+    NSLog(@"send message: %@", message);
+//    NSString *message = @"Test message"
     ;    // Convert data to bytes
     NSData* payload = [message dataUsingEncoding:NSUTF8StringEncoding];
     
