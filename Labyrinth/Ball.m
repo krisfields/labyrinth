@@ -24,7 +24,7 @@
     ballInstance.myLayer = [CALayer new];
     ballInstance.myLayer.bounds = CGRectMake(0, 0, diameter, diameter);
     ballInstance.myLayer.position = pos;
-    ballInstance.myLayer.delegate = ballInstance;
+//    ballInstance.myLayer.delegate = ballInstance;
     [ballInstance.myLayer setNeedsDisplay];
     [superView.layer addSublayer:ballInstance.myLayer];
     if (ballImage) {

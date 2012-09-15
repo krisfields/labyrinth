@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		167EAADB15F7E35200F3F880 /* GameState.m in Sources */ = {isa = PBXBuildFile; fileRef = 167EAADA15F7E35200F3F880 /* GameState.m */; };
 		C50AA45215F6BBA500AA2E4E /* Segment.m in Sources */ = {isa = PBXBuildFile; fileRef = C50AA45115F6BBA500AA2E4E /* Segment.m */; };
 		C50AA45515F6C0BF00AA2E4E /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C50AA45415F6C0BF00AA2E4E /* GameKit.framework */; };
 		C59A93B915F56B39005CD3BE /* ball.png in Resources */ = {isa = PBXBuildFile; fileRef = C59A93B815F56B39005CD3BE /* ball.png */; };
@@ -26,6 +27,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		167EAAD915F7E35200F3F880 /* GameState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameState.h; sourceTree = "<group>"; };
+		167EAADA15F7E35200F3F880 /* GameState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameState.m; sourceTree = "<group>"; };
 		C50AA45015F6BBA500AA2E4E /* Segment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Segment.h; sourceTree = "<group>"; };
 		C50AA45115F6BBA500AA2E4E /* Segment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Segment.m; sourceTree = "<group>"; };
 		C50AA45415F6C0BF00AA2E4E /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
@@ -108,6 +111,8 @@
 				C59EDDB915F52BBB00D53F32 /* LabyrinthViewController.h */,
 				C59A93B815F56B39005CD3BE /* ball.png */,
 				C59EDDBA15F52BBB00D53F32 /* LabyrinthViewController.m */,
+				167EAAD915F7E35200F3F880 /* GameState.h */,
+				167EAADA15F7E35200F3F880 /* GameState.m */,
 				C59EDDBC15F52BBB00D53F32 /* LabyrinthViewController.xib */,
 				C59A93BA15F57ADD005CD3BE /* LabyrinthView.h */,
 				C59A93BB15F57ADD005CD3BE /* LabyrinthView.m */,
@@ -205,6 +210,7 @@
 				C59A93BC15F57ADD005CD3BE /* LabyrinthView.m in Sources */,
 				C59A93C215F57F7F005CD3BE /* Wall.m in Sources */,
 				C50AA45215F6BBA500AA2E4E /* Segment.m in Sources */,
+				167EAADB15F7E35200F3F880 /* GameState.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

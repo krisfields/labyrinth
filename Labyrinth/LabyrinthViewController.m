@@ -13,6 +13,7 @@
 #import "LabyrinthView.h"
 #import "Wall.h"
 #import <GameKit/GameKit.h>
+#import "GameState.h"
 
 @interface LabyrinthViewController () <UIAlertViewDelegate, GKSessionDelegate>
 @property (strong) CMMotionManager* motionManager;
@@ -21,25 +22,28 @@
 @property (strong) NSMutableArray *walls;
 @property (strong) GKSession* session;
 @property bool isClient;
-@property bool isGameStart;
+
+@property GameState* myGameState;
 
 @end
 
 @implementation LabyrinthViewController
-
+/*
+ self.isGameSetup = NO;
+ self.isReadyToPlay =  NO;
+ self.isPlaying = NO;
+ self.isGameEnd = NO;
+ */
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
-//        LabyrinthView *lv = [LabyrinthView new] ;
-//        self.view = lv;
         self.isClient = NO;
-        self.isGameStart = YES;
         self.session = [[GKSession alloc] initWithSessionID:@"Pokemon" displayName:@"Player" sessionMode:GKSessionModePeer];
         [self.session setDataReceiveHandler:self withContext:nil]; // Given to data whenever it's called. Not useful here.
         self.session.delegate = self;
         self.session.available = YES;
+        [self.myGameState setGameState:isGameSetup];
     }
     return self;
 }
@@ -55,22 +59,6 @@
     self.view.backgroundColor = [UIColor whiteColor];
     
     self.walls = [NSMutableArray new];
-//    
-//    CGPoint wallStart = CGPointMake(self.view.bounds.size.width*1/4, self.view.bounds.size.height*2/3);
-//    Wall * wall = [Wall createWallWithStart:wallStart andLength:self.view.bounds.size.width/2 andHoriz:YES andView:self.view];
-//    [self.walls addObject:wall];
-//  
-//    wallStart = CGPointMake(self.view.bounds.size.width*1/4, self.view.bounds.size.height*2/3+10);
-//    Wall * wall2 = [Wall createWallWithStart:wallStart andLength:self.view.bounds.size.width/2 andHoriz:YES andView:self.view];
-//    [self.walls addObject:wall2];
-//    
-//    wallStart = CGPointMake(self.view.bounds.size.width*1/8, self.view.bounds.size.height*2/3+10);
-//    Wall * wall3 = [Wall createWallWithStart:wallStart andLength:self.view.bounds.size.width/2 andHoriz:NO andView:self.view];
-//    [self.walls addObject:wall3];
-//    
-//    wallStart = CGPointMake(self.view.bounds.size.width*7/8, self.view.bounds.size.height*2/3+10);
-//    Wall * wall4 = [Wall createWallWithStart:wallStart andLength:self.view.bounds.size.width/2 andHoriz:NO andView:self.view];
-//    [self.walls addObject:wall4];
     
     CGPoint centerOfView  = CGPointMake(self.view.bounds.size.width/2, self.view.bounds.size.height/2);
     CGPoint bottomRightOfView = CGPointMake(self.view.bounds.size.width-18, self.view.bounds.size.height - 18);
@@ -80,7 +68,6 @@
     self.balls = [NSMutableArray new];
     [self.balls addObject:ball];
     
-//    NSArray *randomWalls = [Wall createRandomWallsWithNum:15 andView:self.view andBalls:self.balls];
     NSArray *randomWalls = [Wall createRandomSolvableMazeWithNum:50 andView:self.view andBalls:self.balls];
     [self.walls addObjectsFromArray:randomWalls];
     
@@ -88,10 +75,6 @@
     
     self.motionManager = [CMMotionManager new];
     [self restartMotionManager];
-//    [self.motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue mainQueue] withHandler:motionBlock];
-    
-    
-    
 }
 
 - (void)viewDidUnload
@@ -115,7 +98,10 @@
                 UIAlertView* popup = [[UIAlertView alloc] initWithTitle:@"You won!" message:@"Play Again?" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
                 [self.motionManager stopDeviceMotionUpdates];
                 [popup show];
-                [self sendMessage:@"You lost!"];
+                
+                [self.myGameState setGameState:isGameEnd];
+                [self sendMessageWithData:self.myGameState.encodeSelf];
+                //[self sendMessage:@"You lost!"];
             }
 
         });
@@ -124,8 +110,6 @@
 }
 
 -(void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-    
-    //    self.window.rootViewController.view = [[AsteroidsView alloc] initWithFrame:self.window.bounds];
     
     for (Ball *ball in self.balls){
         
@@ -137,13 +121,7 @@
         [CATransaction commit];
         
         [self restartMotionManager];
-        
-//        ball.myLayer.bounds = CGRectMake(self.view.bounds.size
-//                                         .width-ball.myLayer.bounds.size.width/2, self.view.bounds.size
-//                                         .height-ball.myLayer.bounds.size.height/2, ball.myLayer.bounds.size.width, ball.myLayer.bounds.size.height);
     }
-    
-    
 }
 
 - (void) restartMotionManager
@@ -166,16 +144,12 @@
     [self.session acceptConnectionFromPeer:peerID error:nil];
     session.available = NO;
     self.isClient = YES;
-    //self.isGameStart = NO;
+    //self.isGameSetup = NO;
     NSLog(@"Did Receive Connection Request");
-    
-//    [self logToView:[NSString stringWithFormat:@"Connecting client: %@\n", peerID]];
-    //  [self sendMessage:@"Hello client!" toPeer:peerID];
 }
 
 -(void)session:(GKSession *)session peer:(NSString *)peerID didChangeState:(GKPeerConnectionState)state {
     if (state == GKPeerStateAvailable) {
-//        [self logToView:[NSString stringWithFormat:@"Connecting to peer: %@\n", peerID]];
         NSLog(@"did Change State, state == GKPeerStateAvailable");
         // I found you. I want to connnect.
         [session connectToPeer:peerID withTimeout:2];
@@ -183,61 +157,62 @@
     } else if (state == GKPeerStateConnected) {
         NSLog(@"did Change State, state == GKPeerStateConnected");
         if (!self.isClient) {
-            NSMutableData *data = [[NSMutableData alloc] init];
-            NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
-            [archiver encodeObject:self.walls forKey:@"walls"];
-            [archiver finishEncoding];
-            [self.session sendDataToAllPeers:data withDataMode:GKSendDataReliable error:nil];
+            self.myGameState.walls = self.walls;
+            [self.myGameState setGameState:isReadyToPlay];
+            [self.session sendDataToAllPeers:self.myGameState.encodeSelf withDataMode:GKSendDataReliable error:nil];
         }
-        // State happens three times. Available, connected, and Disconnected.
-//        [self logToView:[NSString stringWithFormat:@"Connected to peer: %@\n", peerID]];
-        //    [self sendMessage:@"Hello peer!" toPeer:peerID];
-        
-        // only connect two players
-//                [self sendMessage];
-        
         session.available = NO;
     }
 }
 
 // ReveiveData, Delegate method. Mandatory for data handler.
 -(void)receiveData:(NSData *)data fromPeer:(NSString *)peer inSession: (GKSession *)session context:(void *)context {
-    NSLog(@"Receive data, isGameStart is = %d", self.isGameStart);
+    NSLog(@"Receive data, isGameSetup is = %d", self.myGameState.isGameSetup);
     NSString* message;
-    if (self.isGameStart) {
+    if (self.myGameState.isGameSetup) {
         if (self.isClient) {
-            NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
             for (Wall *wall in self.walls){
                 [wall.myLayer removeFromSuperlayer];
             };
             self.walls = nil;
-            self.walls = [unarchiver decodeObjectForKey:@"walls"];
+            //self.walls = [unarchiver decodeObjectForKey:@"walls"];
+            GameState *otherPlayerGameState = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+            self.walls = (NSMutableArray *) otherPlayerGameState.walls;
             for (Wall *wall in self.walls) {
                [self.view.layer addSublayer:wall.myLayer];
                 [wall.myLayer setNeedsDisplay];
             }
             [self.view setNeedsDisplay];
-            [unarchiver finishDecoding];
         }
-        self.isGameStart = NO;
-        message = @"Start!";
-    } else {
-        message = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        [self.myGameState setGameState:isReadyToPlay];
+        // Communicate that client is ready to play
+        [self.session sendDataToAllPeers:self.myGameState.encodeSelf withDataMode:GKSendDataReliable error:nil];
     }
-        [[[UIAlertView alloc] initWithTitle:peer message:message delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil] show];
+    else
+    {
+        message = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                
+        [[[UIAlertView alloc] initWithTitle:peer message:message delegate:self cancelButtonTitle:@"Accept" otherButtonTitles:nil] show];  
+    }
 }
 
 // Send Data. Send message is custom
 -(void)sendMessage:(NSString *)message {
     NSLog(@"send message: %@", message);
-//    NSString *message = @"Test message"
-    ;    // Convert data to bytes
     NSData* payload = [message dataUsingEncoding:NSUTF8StringEncoding];
     
-    // This is where the magic happens. Send the payload to everyone.
-    // You can send it to individual peers as well.
-    // Data Mode: Unreliable or reliable. Reliable: They'll always be received in order.
-    // Unreliable: If it's ok once in a while to lose a message, or come in out of order. Generally faster. Not worth it here.
     [self.session sendDataToAllPeers:payload withDataMode:GKSendDataReliable error:nil];
+}
+
+-(void)sendMessageWithData: (NSData *) data
+{
+    [self.session sendDataToAllPeers:data withDataMode:GKSendDataReliable error:nil];
+}
+
+-(void) session:(GKSession *)session connectionWithPeerFailed:(NSString *)peerID withError:(NSError *)error
+{
+    NSLog(@"In Failure, state == GKPeerStateAvailable");
+    // I found you. I want to connnect.
+    [session connectToPeer:peerID withTimeout:2];
 }
 @end
